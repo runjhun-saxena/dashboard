@@ -1,83 +1,71 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Widget } from "../store/dashboardSlice";
-import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   onConfirm: (widget: Widget) => void;
-  initialName?: string;
 };
 
-export const AddWidgetModal: React.FC<Props> = ({
-  open,
-  onClose,
-  onConfirm,
-  initialName = "",
-}) => {
-  const [name, setName] = useState(initialName);
+export const AddWidgetModal: React.FC<Props> = ({ open, onClose, onConfirm }) => {
+  const [name, setName] = useState("");
   const [text, setText] = useState("");
 
   useEffect(() => {
     if (open) {
-      setName(initialName || "");
+      setName("");
       setText("");
     }
-  }, [open, initialName]);
-
-  if (!open) return null;
+  }, [open]);
 
   function handleConfirm() {
     if (!name.trim()) return;
     const widget: Widget = {
       id: "w_" + Date.now().toString(36),
       name: name.trim(),
-      text: text.trim() || "Placeholder widget content",
+      text: text.trim() || "Placeholder widget",
     };
     onConfirm(widget);
-    setName("");
-    setText("");
+    onClose();
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <motion.div
-        initial={{ scale: 0.97, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="relative z-10 w-full max-w-md bg-white rounded-xl p-6 shadow-lg"
-      >
-        <h4 className="font-semibold mb-2">Add Widget</h4>
-
-        <label className="block text-xs text-gray-600">Widget name</label>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-md border p-2 mt-1 mb-3"
-          placeholder="e.g. Cloud Accounts"
-        />
-
-        <label className="block text-xs text-gray-600">Widget text</label>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          className="w-full rounded-md border p-2 mt-1 mb-3"
-          rows={3}
-          placeholder="Short description or placeholder text"
-        />
-
-        <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-3 py-1 rounded-md border">
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            className="px-3 py-1 rounded-md bg-blue-600 text-white"
-          >
-            Add
-          </button>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add Widget</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <Input
+            placeholder="Widget name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Textarea
+            placeholder="Widget text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
         </div>
-      </motion.div>
-    </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm}>Add</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

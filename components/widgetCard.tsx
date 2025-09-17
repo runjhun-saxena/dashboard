@@ -1,4 +1,3 @@
-// components/WidgetCard.tsx
 import React from "react";
 import { Widget } from "../store/dashboardSlice";
 import { motion } from "framer-motion";
