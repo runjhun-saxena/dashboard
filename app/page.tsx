@@ -1,11 +1,13 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../store";
 import {
   addCategory,
   addAndShowWidget,
   removeWidget,
+  hydrate,
+  loadPersistedState,
   Widget,
 } from "../store/dashboardSlice";
 import { CategoryCard } from "@/components/categoryCard";
@@ -22,6 +24,12 @@ export default function Home() {
   );
   const [addCategoryOpen, setAddCategoryOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Hydrate from localStorage on client mount
+  useEffect(() => {
+    const persistedState = loadPersistedState();
+    dispatch(hydrate(persistedState));
+  }, [dispatch]);
 
   function handleAddWidgetConfirm(widget: Widget) {
     if (!addWidgetOpenFor) return;

@@ -133,10 +133,29 @@ function persist(state: DashboardState) {
   }
 }
 
+export function loadPersistedState(): DashboardState | undefined {
+  if (typeof window === 'undefined') return undefined
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY)
+    if (raw) {
+      const data = JSON.parse(raw);
+      return migrateOldData(data);
+    }
+  } catch (e) {
+  }
+  return undefined
+}
+
 const slice = createSlice({
   name: 'dashboard',
-  initialState: (typeof window !== 'undefined' ? loadInitial() : SAMPLE_JSON) as DashboardState,
+  initialState: SAMPLE_JSON,
   reducers: {
+    hydrate(state, action: PayloadAction<DashboardState | undefined>) {
+      if (action.payload) {
+        state.categories = action.payload.categories
+        state.availableWidgets = action.payload.availableWidgets
+      }
+    },
     addCategory(state, action: PayloadAction<{ id: string; name: string }>) {
       state.categories.push({ id: action.payload.id, name: action.payload.name, displayedWidgets: [] })
       persist(state)
@@ -163,7 +182,7 @@ const slice = createSlice({
         state.availableWidgets.push(widgetWithCategory)
       }
       
-      // Make it visible in the specified category
+      // Make it visible in the specified category and only in that category 
       const cat = state.categories.find(c => c.id === action.payload.categoryId)
       if (cat && !cat.displayedWidgets.includes(action.payload.widget.id)) {
         cat.displayedWidgets.push(action.payload.widget.id)
@@ -224,5 +243,5 @@ const slice = createSlice({
   },
 })
 
-export const { addCategory, removeCategory, addWidget, addAndShowWidget, removeWidget, toggleWidgetVisibility, toggleWidgetInCategory, setAll } = slice.actions
+export const { hydrate, addCategory, removeCategory, addWidget, addAndShowWidget, removeWidget, toggleWidgetVisibility, toggleWidgetInCategory, setAll } = slice.actions
 export default slice.reducer
