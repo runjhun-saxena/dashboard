@@ -17,9 +17,10 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onConfirm: (widget: Widget) => void;
+  categoryId?: string;
 };
 
-export const AddWidgetModal: React.FC<Props> = ({ open, onClose, onConfirm }) => {
+export const AddWidgetModal: React.FC<Props> = ({ open, onClose, onConfirm, categoryId }) => {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
 
@@ -31,11 +32,12 @@ export const AddWidgetModal: React.FC<Props> = ({ open, onClose, onConfirm }) =>
   }, [open]);
 
   function handleConfirm() {
-    if (!name.trim()) return;
+    if (!name.trim() || !categoryId) return;
     const widget: Widget = {
       id: "w_" + Date.now().toString(36),
       name: name.trim(),
       text: text.trim() || "Placeholder widget",
+      categoryId: categoryId,
     };
     onConfirm(widget);
     onClose();

@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../store";
-import { toggleWidgetInCategory, removeWidget } from "../store/dashboardSlice";
+import { toggleWidgetInCategory, removeWidget, Widget } from "../store/dashboardSlice";
 import {
   Sheet,
   SheetContent,
@@ -37,7 +37,7 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
   const [canScrollRight, setCanScrollRight] = useState(false);
 
   const catalogByCategory = useMemo(() => {
-    const map = new Map<string, { catId: string; catName: string; widgets: any[] }>();
+    const map = new Map<string, { catId: string; catName: string; widgets: Widget[] }>();
 
     // Initialize map with all categories
     for (const c of dashboard.categories) {
@@ -170,7 +170,7 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
     return cat.displayedWidgets.includes(widgetId);
   };
 
-  const handleToggle = (categoryId: string, widget: any, checked: boolean | null) => {
+  const handleToggle = (categoryId: string, widget: Widget, checked: boolean | null) => {
     dispatch(toggleWidgetInCategory({ categoryId, widget, checked: !!checked }));
   };
 
@@ -194,7 +194,7 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
             </p>
 
             <div className="flex items-center gap-2 mb-4">
-              {dashboard.categories.length > 1 && (
+              {showScrollControls && (
                 <Button
                   variant="outline"
                   size="icon"
@@ -239,7 +239,7 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
                 </div>
               </div>
 
-              {dashboard.categories.length > 1 && (
+              {showScrollControls && (
                 <Button
                   variant="outline"
                   size="icon"
@@ -264,7 +264,7 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
                     </div>
                   </div>
                 ) : (
-                  activeCategory.widgets.map((widget: any) => {
+                  activeCategory.widgets.map((widget: Widget) => {
                     const checked = isWidgetInCategory(activeTab || activeCategory.catId, widget.id);
                     return (
                       <div
