@@ -329,14 +329,7 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
           </div>
         </div>
 
-        <SheetFooter className="flex items-center justify-end gap-3 p-4 sm:p-6 border-t shrink-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={() => onOpenChange(false)}>
-            Confirm
-          </Button>
-        </SheetFooter>
+
       </SheetContent>
 
       <style jsx>{`
