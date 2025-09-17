@@ -13,8 +13,9 @@ import {
 } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Search } from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -28,6 +29,7 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
   const [activeTab, setActiveTab] = useState<string | undefined>(
     dashboard.categories[0]?.id
   );
+  const [searchQuery, setSearchQuery] = useState("");
 
   const tabsContainerRef = useRef<HTMLDivElement | null>(null);
   const tabsListRef = useRef<HTMLDivElement | null>(null);
@@ -39,13 +41,24 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
   const catalogByCategory = useMemo(() => {
     const map = new Map<string, { catId: string; catName: string; widgets: Widget[] }>();
 
-    // Initialize map with all categories
     for (const c of dashboard.categories) {
       if (!map.has(c.id)) {
         map.set(c.id, { catId: c.id, catName: c.name, widgets: [] });
       }
     }
+    
     for (const widget of dashboard.availableWidgets) {
+      if (searchQuery.trim()) {
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = 
+          widget.name.toLowerCase().includes(searchLower) ||
+          widget.text.toLowerCase().includes(searchLower);
+        
+        if (!matchesSearch) {
+          continue; 
+        }
+      }
+      
       const entry = map.get(widget.categoryId);
       if (entry && !entry.widgets.find((w) => w.id === widget.id)) {
         entry.widgets.push(widget);
@@ -53,7 +66,7 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
     }
 
     return Array.from(map.values());
-  }, [dashboard.categories, dashboard.availableWidgets]);
+  }, [dashboard.categories, dashboard.availableWidgets, searchQuery]);
   useEffect(() => {
     if (!activeTab && dashboard.categories[0]) {
       setActiveTab(dashboard.categories[0].id);
@@ -193,6 +206,17 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
               Personalise your dashboard by adding the following widgets.
             </p>
 
+            {/* Search input */}
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search widgets..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
             <div className="flex items-center gap-2 mb-4">
               {showScrollControls && (
                 <Button
@@ -207,7 +231,6 @@ export const AllWidgetsDrawer: React.FC<Props> = ({ open, onOpenChange }) => {
                 </Button>
               )}
 
-              {/* Scrollable tabs container */}
               <div
                 ref={tabsContainerRef}
                 className="flex-1 overflow-x-auto scrollbar-hide"

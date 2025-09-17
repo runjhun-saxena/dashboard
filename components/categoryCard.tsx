@@ -26,13 +26,13 @@ export const CategoryCard: React.FC<Props> = ({
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-base font-semibold">{category.name}</h3>
         <div className="flex items-center gap-2">
-<Button
-  onClick={() => onAddWidgetClick(category.id)}
-  variant="outline"
-  size="sm"
->
-  + Add Widget
-</Button>
+          <Button
+            onClick={() => onAddWidgetClick(category.id)}
+            variant="outline"
+            size="sm"
+          >
+            + Add Widget
+          </Button>
         </div>
       </div>
 
@@ -46,7 +46,7 @@ export const CategoryCard: React.FC<Props> = ({
             />
           ))}
         </AnimatePresence>
-      
+
 
       </div>
     </div>
