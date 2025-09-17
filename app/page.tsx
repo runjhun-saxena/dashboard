@@ -1,11 +1,12 @@
 'use client';
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../store";
 import {
   addCategory,
   addAndShowWidget,
   removeWidget,
+  Widget,
 } from "../store/dashboardSlice";
 import { CategoryCard } from "@/components/categoryCard";
 import { AddWidgetModal } from "@/components/addWidget";
@@ -22,7 +23,7 @@ export default function Home() {
   const [addCategoryOpen, setAddCategoryOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  function handleAddWidgetConfirm(widget: any) {
+  function handleAddWidgetConfirm(widget: Widget) {
     if (!addWidgetOpenFor) return;
     dispatch(addAndShowWidget({ categoryId: addWidgetOpenFor, widget }));
     setAddWidgetOpenFor(null);
@@ -61,6 +62,7 @@ export default function Home() {
           open={!!addWidgetOpenFor}
           onClose={() => setAddWidgetOpenFor(null)}
           onConfirm={handleAddWidgetConfirm}
+          categoryId={addWidgetOpenFor || undefined}
         />
 
         <AddCategoryModal
